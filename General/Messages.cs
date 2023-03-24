@@ -6,6 +6,7 @@
         {
             public const string generic = "Ocorreu um erro inesperado";
             public const string required = "Este campo é obrigatório";
+            public const string itemNotFound = "Item não encontrado";
 
             public const string cnpjlength = "O campo CNPJComprador deve ser preenchido com pelo menos 14 caracteres";
             public const string cnpjCrequired = "O campo CNPJComprador é obrigatório";

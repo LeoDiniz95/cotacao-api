@@ -41,8 +41,8 @@ namespace cotacao_api.Models
         [Column("logradouro")]
         public string Logradouro { get; set; }
 
-        [Column("completemento")]
-        public string Completemento { get; set; }
+        [Column("complemento")]
+        public string Complemento { get; set; }
 
         [Column("bairro")]
         public string Bairro { get; set; }
