@@ -1,11 +1,6 @@
 ﻿using cotacao_api.Data;
 using cotacao_api.General;
 using cotacao_api.Models;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.OpenApi;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace cotacao_api.Repositories
 {
@@ -94,18 +89,12 @@ namespace cotacao_api.Repositories
             return result;
         }
 
-        public GeneralResult Save(CotacaoRequest request)
+        public GeneralResult VerifyFields(CotacaoRequest request, CotacaoDM cotacao)
         {
             var result = new GeneralResult();
-            CotacaoDM cotacao = null;
-            var cotacaoItems = new CotacaoItem(_context);
 
             try
             {
-                if (request.id != null && request.id > 0)
-                    cotacao = Get((int)request.id);
-                else
-                    cotacao = new CotacaoDM();
 
                 if (!string.IsNullOrEmpty(request.cnpjComprador.Trim()))
                     cotacao.CNPJComprador = request.cnpjComprador;
@@ -131,50 +120,82 @@ namespace cotacao_api.Repositories
                 else
                     result.AddError(Messages.Errors.CEPRequired);
 
-                if (!result.failure)
+                result.data = cotacao;
+            }
+            catch (Exception ex)
+            {
+                result.AddError(ex.Message);
+            }
+
+            return result;
+        }
+
+        public GeneralResult CheckCEP(CotacaoDM cotacao)
+        {
+            var result = new GeneralResult();
+
+            try
+            {
+                if (string.IsNullOrEmpty(cotacao.Logradouro.Trim()) || string.IsNullOrEmpty(cotacao.Complemento.Trim()) || string.IsNullOrEmpty(cotacao.Bairro.Trim()) || string.IsNullOrEmpty(cotacao.UF.Trim()))
                 {
-                    cotacao.Logradouro = request.logradouro;
-                    cotacao.Complemento = request.completemento;
-                    cotacao.Bairro = request.bairro;
-                    cotacao.UF = request.uf;
+                    var address = (ViaCepResult)GetAddress(cotacao.CEP).data;
 
-                    if (string.IsNullOrEmpty(cotacao.Logradouro.Trim()) || string.IsNullOrEmpty(cotacao.Complemento.Trim()) || string.IsNullOrEmpty(cotacao.Bairro.Trim()) || string.IsNullOrEmpty(cotacao.UF.Trim()))
-                    {
-                        var address = (ViaCepResult)GetAddress(cotacao.CEP).data;
+                    cotacao.Logradouro = address.Street;
+                    cotacao.Complemento = address.Complement;
+                    cotacao.Bairro = address.Neighborhood;
+                    cotacao.UF = address.StateInitials;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.AddError(ex.Message);
+            }
 
-                        if (string.IsNullOrEmpty(cotacao.Logradouro.Trim()))
-                            cotacao.Logradouro = address.Street;
+            return result;
+        }
 
-                        if (string.IsNullOrEmpty(cotacao.Complemento.Trim()))
-                            cotacao.Complemento = address.Complement;
+        public GeneralResult Save(CotacaoRequest request)
+        {
+            var result = new GeneralResult();
+            CotacaoDM cotacao = null;
+            var cotacaoItems = new CotacaoItem(_context);
 
-                        if (string.IsNullOrEmpty(cotacao.Bairro.Trim()))
-                            cotacao.Bairro = address.Neighborhood;
+            try
+            {
+                if (request.id != null && request.id > 0)
+                    cotacao = Get((int)request.id);
+                else
+                    cotacao = new CotacaoDM();
 
-                        if (string.IsNullOrEmpty(cotacao.UF.Trim()))
-                            cotacao.UF = address.StateInitials;
-                    }
+                result = VerifyFields(request, cotacao);
+                cotacao = (CotacaoDM)result.data;
 
-                    cotacao.Observacao = request.observacao;
+                cotacao.Logradouro = request.logradouro;
+                cotacao.Complemento = request.completemento;
+                cotacao.Bairro = request.bairro;
+                cotacao.UF = request.uf;
 
-                    if (!result.failure)
-                        result = Save(cotacao);
+                result = CheckCEP(cotacao);
+                cotacao = (CotacaoDM)result.data;
 
-                    if (!result.failure)
-                    {
-                        foreach (var item in request?.cotacaoItens)
-                        {
-                            item.idCotacao = cotacao.Id;
-                            cotacaoItems.Save(item);
-                        }
-                    }
+                cotacao.Observacao = request.observacao;
 
+                if (!result.failure)
+                    result = Save(cotacao);
+
+
+                foreach (var item in request?.cotacaoItens)
+                {
+                    item.idCotacao = cotacao.Id;
+                    result = cotacaoItems.Save(item);
+                }
+
+                if (!result.failure)
                     result.data = new
                     {
                         cotacao,
-                        CotacaoItens = cotacaoItems.GetByCotacao(cotacao.Id),
+                        CotacaoItens = cotacaoItems.GetByCotacao(cotacao.Id)
                     };
-                }
             }
             catch (Exception ex)
             {

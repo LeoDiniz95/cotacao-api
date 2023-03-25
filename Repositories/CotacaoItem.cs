@@ -1,8 +1,6 @@
 ﻿using cotacao_api.Data;
 using cotacao_api.General;
 using cotacao_api.Models;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace cotacao_api.Repositories
 {
@@ -32,7 +30,7 @@ namespace cotacao_api.Repositories
 
         public CotacaoItemDM Get(int id) => _context.CotacaoItemDMs?.SingleOrDefault(x => x.Id == id && x.Status == Constants.Status.active);
 
-        public List<CotacaoItemDM> GetByCotacao(int idCotacao) => _context.CotacaoItemDMs?.Where(x => x.IdCotacao == idCotacao && x.Status == Constants.Status.active).ToList();
+        public List<CotacaoItemDM> GetByCotacao(int idCotacao) => _context.CotacaoItemDMs?.Where(x => x.IdCotacao == idCotacao && x.Status == Constants.Status.active)?.ToList();
 
         public GeneralResult Save(CotacaoItemDM item)
         {

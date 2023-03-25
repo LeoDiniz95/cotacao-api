@@ -1,5 +1,5 @@
-﻿using cotacao_api.Repositories;
-using Microsoft.AspNetCore.Http;
+﻿using cotacao_api.General;
+using cotacao_api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cotacao_api.Controllers
@@ -23,7 +23,9 @@ namespace cotacao_api.Controllers
         [HttpGet("GetByCotacao/{idCotacao}")]
         public JsonResult GetByIdCotacao(int idCotacao, [FromServices] CotacaoItem cotacaoitem)
         {
-            return new JsonResult(cotacaoitem.GetByCotacao(idCotacao));
+            var result = new GeneralResult();
+            result.data = cotacaoitem.GetByCotacao(idCotacao);
+            return new JsonResult(result);
         }
 
         [HttpPost]
