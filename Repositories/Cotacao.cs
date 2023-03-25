@@ -20,14 +20,29 @@ namespace cotacao_api.Repositories
         public GeneralResult GetAll()
         {
             var result = new GeneralResult();
+            var cotacaoItems = new CotacaoItem(_context);
 
             try
             {
-                result.data = _context.CotacaoDMs?.Where(x => x.Status == Constants.Status.active);
+                var cotacoes = _context.CotacaoDMs?.Where(x => x.Status == Constants.Status.active);
+                List<object> cotacaoResponse = new List<object>();
+
+                foreach (var cotacao in cotacoes)
+                {
+                    var objeto = new
+                    {
+                        cotacao,
+                        CotacaoItens = cotacaoItems.GetByCotacao(cotacao.Id)
+                    };
+
+                    cotacaoResponse.Add(objeto);
+                }
+
+                result.data = cotacaoResponse;
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
@@ -46,7 +61,7 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
@@ -73,7 +88,7 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
@@ -112,7 +127,7 @@ namespace cotacao_api.Repositories
                     cotacao.DataEntregaCotacao = (DateOnly)request.dataEntregaCotacao;
 
                 if (!string.IsNullOrEmpty(request.cep.Trim()))
-                    cotacao.CEP = request.cep.Replace(".","").Replace("-", "").Trim();
+                    cotacao.CEP = request.cep.Replace(".", "").Replace("-", "").Trim();
                 else
                     result.AddError(Messages.Errors.CEPRequired);
 
@@ -153,11 +168,17 @@ namespace cotacao_api.Repositories
                             cotacaoItems.Save(item);
                         }
                     }
+
+                    result.data = new
+                    {
+                        cotacao,
+                        CotacaoItens = cotacaoItems.GetByCotacao(cotacao.Id),
+                    };
                 }
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
@@ -174,7 +195,7 @@ namespace cotacao_api.Repositories
                 if (cotacao != null)
                 {
                     cotacao.Status = Constants.Status.inactive;
-                    result = Save(cotacao);
+                    Save(cotacao);
                     result.AddMessage(Messages.Success.delete);
                 }
                 else
@@ -182,12 +203,14 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
         }
     }
+
+
     public class CotacaoRequest
     {
         public int? id { get; set; }

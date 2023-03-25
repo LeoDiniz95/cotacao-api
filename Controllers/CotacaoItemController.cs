@@ -14,10 +14,16 @@ namespace cotacao_api.Controllers
             return new JsonResult(cotacaoitem.GetAll());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{idCotacao}")]
         public JsonResult Get(int id, [FromServices] CotacaoItem cotacaoitem)
         {
             return new JsonResult(cotacaoitem.Get(id));
+        }
+
+        [HttpGet("GetByCotacao/{idCotacao}")]
+        public JsonResult GetByIdCotacao(int idCotacao, [FromServices] CotacaoItem cotacaoitem)
+        {
+            return new JsonResult(cotacaoitem.GetByCotacao(idCotacao));
         }
 
         [HttpPost]
@@ -26,13 +32,13 @@ namespace cotacao_api.Controllers
             return new JsonResult(cotacaoitem.Save(request));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{idCotacao}")]
         public JsonResult Put([FromBody] ItemRequest request, [FromServices] CotacaoItem cotacaoitem)
         {
             return new JsonResult(cotacaoitem.Save(request));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{idCotacao}")]
         public JsonResult Delete(int id, [FromServices] CotacaoItem cotacaoitem)
         {
             return new JsonResult(cotacaoitem.Delete(id));

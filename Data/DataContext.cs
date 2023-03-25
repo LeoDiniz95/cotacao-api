@@ -10,13 +10,5 @@ namespace cotacao_api.Data
 
         public DbSet<CotacaoDM> CotacaoDMs { get; set; }
         public DbSet<CotacaoItemDM> CotacaoItemDMs { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<CotacaoItemDM>()
-                .HasOne(p => p.Cotacao)
-                .WithMany(b => b.CotacaoItens)
-                .HasForeignKey(p => p.IdCotacao);
-        }
     }
 }

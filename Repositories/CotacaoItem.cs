@@ -24,13 +24,15 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
         }
 
-        public CotacaoItemDM Get(int id) => _context.CotacaoItemDMs?.SingleOrDefault(x => x.Id == id);
+        public CotacaoItemDM Get(int id) => _context.CotacaoItemDMs?.SingleOrDefault(x => x.Id == id && x.Status == Constants.Status.active);
+
+        public List<CotacaoItemDM> GetByCotacao(int idCotacao) => _context.CotacaoItemDMs?.Where(x => x.IdCotacao == idCotacao && x.Status == Constants.Status.active).ToList();
 
         public GeneralResult Save(CotacaoItemDM item)
         {
@@ -53,7 +55,7 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
@@ -98,7 +100,7 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;
@@ -124,7 +126,7 @@ namespace cotacao_api.Repositories
             }
             catch (Exception ex)
             {
-                result.AddError(ex);
+                result.AddError(ex.Message);
             }
 
             return result;

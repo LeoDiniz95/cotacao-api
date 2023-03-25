@@ -39,7 +39,5 @@ namespace cotacao_api.Models
         [StringLength(1)]
         [Column("status")]
         public string Status { get; set; }
-
-        public CotacaoDM Cotacao { get; set; }
     }
 }

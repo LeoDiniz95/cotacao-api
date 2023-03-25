@@ -19,13 +19,6 @@
             date = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
         }
 
-        public void AddError(Exception ex)
-        {
-            failure = true;
-            data = new { };
-            errors.Add(ex.Message);
-        }
-
         public void AddError(string ex)
         {
             failure = true;
