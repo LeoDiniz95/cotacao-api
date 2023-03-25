@@ -10,7 +10,7 @@
 
         public string date { get; set; }
 
-        public List<string> message { get; set; }
+        public string message { get; set; }
 
         public GeneralResult()
         {
@@ -35,7 +35,7 @@
 
         public void AddMessage(string _message)
         {
-            message.Add(_message);
+            message = _message;
         }
     }
 }

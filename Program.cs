@@ -1,4 +1,4 @@
-using cotacao_api;
+﻿using cotacao_api;
 
 var builder = WebApplication.CreateBuilder(args);
 

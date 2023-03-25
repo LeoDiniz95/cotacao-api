@@ -2,10 +2,16 @@
 {
     public class Messages
     {
+        public static class Success
+        {
+            public const string save = "Registro salvo com sucesso";
+            public const string delete = "Registro removido com sucesso";
+        }
         public static class Errors
         {
             public const string generic = "Ocorreu um erro inesperado";
             public const string required = "Este campo é obrigatório";
+            public const string cotacaoNotFound = "Cotação não encontrado";
             public const string itemNotFound = "Item não encontrado";
 
             public const string cnpjlength = "O campo CNPJComprador deve ser preenchido com pelo menos 14 caracteres";

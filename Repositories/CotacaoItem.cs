@@ -49,6 +49,7 @@ namespace cotacao_api.Repositories
                 _context.SaveChanges();
 
                 result.data = item;
+                result.AddMessage(Messages.Success.save);
             }
             catch (Exception ex)
             {
@@ -116,6 +117,7 @@ namespace cotacao_api.Repositories
                 {
                     item.Status = Constants.Status.inactive;
                     result = Save(item);
+                    result.AddMessage(Messages.Success.delete);
                 }
                 else
                     result.AddError(Messages.Errors.itemNotFound);
