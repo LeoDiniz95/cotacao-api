@@ -92,12 +92,12 @@ namespace cotacao_api.Repositories
                 else
                     cotacao = new CotacaoDM();
 
-                if (!string.IsNullOrEmpty(request.cnpjComprador))
+                if (!string.IsNullOrEmpty(request.cnpjComprador.Trim()))
                     cotacao.CNPJComprador = request.cnpjComprador;
                 else
                     result.AddError(Messages.Errors.cnpjCrequired);
 
-                if (!string.IsNullOrEmpty(request.cnpjFornecedor))
+                if (!string.IsNullOrEmpty(request.cnpjFornecedor.Trim()))
                     cotacao.CNPJFornecedor = request.cnpjFornecedor;
                 else
                     result.AddError(Messages.Errors.cnpjFRequired);
@@ -111,8 +111,8 @@ namespace cotacao_api.Repositories
                 if (request.dataEntregaCotacao != null)
                     cotacao.DataEntregaCotacao = (DateOnly)request.dataEntregaCotacao;
 
-                if (!string.IsNullOrEmpty(request.cep))
-                    cotacao.CEP = request.cep;
+                if (!string.IsNullOrEmpty(request.cep.Trim()))
+                    cotacao.CEP = request.cep.Replace(".","").Replace("-", "").Trim();
                 else
                     result.AddError(Messages.Errors.CEPRequired);
 
@@ -123,20 +123,20 @@ namespace cotacao_api.Repositories
                     cotacao.Bairro = request.bairro;
                     cotacao.UF = request.uf;
 
-                    if (string.IsNullOrEmpty(cotacao.Logradouro) || string.IsNullOrEmpty(cotacao.Complemento) || string.IsNullOrEmpty(cotacao.Bairro) || string.IsNullOrEmpty(cotacao.UF))
+                    if (string.IsNullOrEmpty(cotacao.Logradouro.Trim()) || string.IsNullOrEmpty(cotacao.Complemento.Trim()) || string.IsNullOrEmpty(cotacao.Bairro.Trim()) || string.IsNullOrEmpty(cotacao.UF.Trim()))
                     {
                         var address = (ViaCepResult)GetAddress(cotacao.CEP).data;
 
-                        if (string.IsNullOrEmpty(cotacao.Logradouro))
+                        if (string.IsNullOrEmpty(cotacao.Logradouro.Trim()))
                             cotacao.Logradouro = address.Street;
 
-                        if (string.IsNullOrEmpty(cotacao.Complemento))
+                        if (string.IsNullOrEmpty(cotacao.Complemento.Trim()))
                             cotacao.Complemento = address.Complement;
 
-                        if (string.IsNullOrEmpty(cotacao.Bairro))
+                        if (string.IsNullOrEmpty(cotacao.Bairro.Trim()))
                             cotacao.Bairro = address.Neighborhood;
 
-                        if (string.IsNullOrEmpty(cotacao.UF))
+                        if (string.IsNullOrEmpty(cotacao.UF.Trim()))
                             cotacao.UF = address.StateInitials;
                     }
 
@@ -150,7 +150,7 @@ namespace cotacao_api.Repositories
                         foreach (var item in request?.cotacaoItens)
                         {
                             item.idCotacao = cotacao.Id;
-                            result = cotacaoItems.Save(item);
+                            cotacaoItems.Save(item);
                         }
                     }
                 }
