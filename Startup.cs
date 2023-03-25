@@ -44,7 +44,7 @@ namespace cotacao_api
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API To Do List");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Cotacao");
                 });
             }
 
